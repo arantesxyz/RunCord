@@ -1,4 +1,5 @@
 # RunCord
+Eris discord bot framework.
 
 More info comming soon...
 
