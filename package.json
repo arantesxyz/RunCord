@@ -9,7 +9,6 @@
   "scripts": {
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored --no-comments",
     "build:declaration": "tsc --emitDeclarationOnly",
-    "dev": "tsnd --transpile-only --respawn --ignore-watch=\"node_modules|\\.json\" src/index.dev.ts",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "jest",
     "prepublish": "yarn lint && yarn test && yarn build && yarn build:declaration"
@@ -36,7 +35,6 @@
     "husky": "^4.2.5",
     "jest": "^26.4.0",
     "ts-jest": "^26.2.0",
-    "ts-node-dev": "^1.0.0-pre.56",
     "typescript": "^3.9.7"
   }
 }
