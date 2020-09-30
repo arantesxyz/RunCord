@@ -1,7 +1,8 @@
 {
   "name": "runcord",
-  "version": "0.0.1",
-  "main": "src/index.js",
+  "version": "0.0.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/arantesxyz/RunCord.git",
   "author": "Gustavo Arantes <me@arantes.dev>",
   "license": "MIT",
@@ -10,14 +11,17 @@
     "build:declaration": "tsc --emitDeclarationOnly",
     "dev": "tsnd --transpile-only --respawn --ignore-watch=\"node_modules|\\.json\" src/index.dev.ts",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "yarn lint && yarn test && yarn build && yarn build:declaration"
   },
   "husky": {
     "hooks": {
       "pre-push": "yarn lint && yarn test"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "eris": "^0.13.3"
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.1",
