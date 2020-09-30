@@ -1,14 +1,14 @@
 {
-  "name": "ts-project-base",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "runcord",
+  "version": "0.0.1",
+  "main": "src/index.js",
   "repository": "https://github.com/arantesxyz/RunCord.git",
   "author": "Gustavo Arantes <me@arantes.dev>",
   "license": "MIT",
   "scripts": {
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored --no-comments",
     "build:declaration": "tsc --emitDeclarationOnly",
-    "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules src/index.dev.ts",
+    "dev": "tsnd --transpile-only --respawn --ignore-watch=\"node_modules|\\.json\" src/index.dev.ts",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "jest"
   },
