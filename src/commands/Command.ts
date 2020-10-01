@@ -38,16 +38,43 @@ class Command {
     this.subcommands.delete(name);
   }
 
+  // _execute(client: Client, message: Message, args: Array<string>): void {
+  // this.onExecute(client, message, args);
+  // }
+
   execute(client: Client, message: Message, args: Array<string>): void {
+    // TODO: Check perms
+
+
+    if (args.length < this.options.requiredArgs) {
+      const usage =
+        client.botOptions.prefix +
+        this.getFullName() +
+        this.options.usage;
+
+      throw {
+        name: "InvalidArguments",
+        message: `Invalid arguments. Please use ${usage}`,
+        usage
+      };
+    }
+
+    // Check for subcommand
     const [ firstArg, ...rest ] = args;
     const subCommandName = firstArg.toLowerCase();
 
-    if (this.subcommands.has(subCommandName)) {
-      this.subcommands.get(subCommandName)?.execute(client, message, rest);
+    const subCommand = this.subcommands.get(subCommandName);
+    if (subCommand) {
+      subCommand.execute(client, message, rest);
       return;
     }
 
     this.onExecute(client, message, args);
+  }
+
+  getFullName(): string {
+    const parentName = this.parent ? this.parent.getFullName() : "";
+    return parentName + this.name;
   }
 }
 
