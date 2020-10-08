@@ -1,5 +1,4 @@
-console.log("Hello World!");
+import { Client } from "./Client";
+import { Command } from "./commands/Command";
 
-import { sum } from "./module";
-
-console.log(sum(1, 5));
+export { Client, Command };
