@@ -1,7 +1,7 @@
 import { Message } from "eris";
 
 import { Client } from "../Client";
-import { CommandOptions } from "./CommandOptions";
+import { CommandOptions } from "./structures";
 
 class Command {
   name: string;
