@@ -1,56 +1,33 @@
-import { Command } from "./commands/Command";
 import { Client as ErisClient, ClientOptions } from "eris";
+
+import { InMemoryPromptRepository } from "./prompts/InMemoryPromptRepository";
+import { CommandManager } from "./commands/CommandHandler";
+import { PromptRepository } from "./prompts/structures";
+import { PromptManager } from "./prompts/PromptManager";
 
 interface RunCordOptions {
   prefix?: string;
+  promptRepository: PromptRepository;
 }
 class Client extends ErisClient {
   botOptions: RunCordOptions;
 
-  commands: Map<string, Command>
-  aliases: Map<string, string>;
+  promptManager: PromptManager;
+  commandManager: CommandManager;
 
   constructor(
     token: string,
-    botOptions: RunCordOptions,
-    clientOptions: ClientOptions
+    botOptions: RunCordOptions = {
+      promptRepository: new InMemoryPromptRepository()
+    },
+    clientOptions: ClientOptions = {}
   ) {
     super(token, clientOptions);
-    
+
     this.botOptions = botOptions;
 
-    this.commands = new Map();
-    this.aliases = new Map();
-  }
-
-  addCommand(command: Command): void {
-    const commandName = command.name.toLowerCase();
-
-    this.commands.set(commandName, command);
-    command.options.aliases.forEach(alias =>
-      this.aliases.set(alias, commandName)
-    );
-  }
-
-  removeCommand(name: string): void {
-    name = name.toLowerCase();
-
-    const command = this.commands.get(name);
-    if (!command) return;
-    
-    this.commands.delete(name);
-    command.options.aliases.forEach(alias => this.aliases.delete(alias));
-  }
-
-  getCommand(name: string, { ignoreCase = true } = {}): Command | null {
-    if (ignoreCase) name = name.toLowerCase();
-
-    if (this.commands.has(name)) return this.commands.get(name) || null;
-
-    const aliase = this.aliases.get(name);
-    if (aliase) return this.commands.get(aliase) || null;
-
-    return null;
+    this.promptManager = new PromptManager(botOptions.promptRepository);
+    this.commandManager = new CommandManager();
   }
 }
 
