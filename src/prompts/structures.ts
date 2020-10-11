@@ -19,7 +19,6 @@ interface PromptQuery {
   name?: string;
   type?: "reaction" | "message";
   channelId?: string;
-  messageId?: string;
 }
 
 interface PromptExecutor extends Prompt{
@@ -47,10 +46,13 @@ interface ReactionPromptExecutor extends PromptExecutor {
 }
 
 interface PromptRepository {
-  upsert(prompt: PromptData): Promise<void>;
-  findOne(prompt: PromptQuery): Promise<PromptData | undefined>;
-  find(prompt: PromptQuery): Promise<PromptData[] | []>;
-  remove(prompt: PromptQuery): Promise<void>;
+  set(prompt: PromptData): Promise<void>;
+
+  remove(messageId: string): Promise<void>;
+  removeAll(query: PromptQuery): Promise<void>;
+
+  get(messageId: string): Promise<PromptData | undefined>;
+  getAll(query: PromptQuery): Promise<PromptData[]>;
 }
 
 export {

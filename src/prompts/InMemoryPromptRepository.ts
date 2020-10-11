@@ -1,20 +1,41 @@
 import { PromptData, PromptQuery, PromptRepository } from "./structures";
 
 class InMemoryPromptRepository implements PromptRepository {
-  constructor() {
-    // TODO
+  storage = new Map<string, PromptData>();
+
+  async set(prompt: PromptData): Promise<void> {
+    this.storage.set(prompt.messageId, prompt);
   }
-  upsert(prompt: PromptData): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async remove(messageId: string): Promise<void> {
+    this.storage.delete(messageId);
   }
-  findOne(prompt: PromptQuery): Promise<PromptData | undefined> {
-    throw new Error("Method not implemented.");
+
+  async removeAll(query: PromptQuery): Promise<void> {
+    const keys = Object.keys(query) as ("channelId" | "name" | "type")[];
+
+    for (const [key, value] of this.storage) {
+      if (keys.every((key) => value[key] === query[key])) {
+        this.storage.delete(key);
+      }
+    }
   }
-  find(prompt: PromptQuery): Promise<PromptData[] | []> {
-    throw new Error("Method not implemented.");
+
+  async get(messageId: string): Promise<PromptData | undefined> {
+    return this.storage.get(messageId);
   }
-  remove(prompt: PromptQuery): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async getAll(query: PromptQuery): Promise<PromptData[]> {
+    const result = [] as PromptData[];
+    const keys = Object.keys(query) as ("channelId" | "name" | "type")[];
+
+    for (const [ignored, value] of this.storage) {
+      if (keys.every((key) => value[key] === query[key])) {
+        result.push(value);
+      }
+    }
+
+    return result;
   }
 }
 

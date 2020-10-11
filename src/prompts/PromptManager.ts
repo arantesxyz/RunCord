@@ -27,11 +27,15 @@ class PromptManager {
   }
 
   createPrompt(data: PromptData): void {
-    this.repository.upsert(data);
+    this.repository.set(data);
   }
 
-  removePrompt(query: PromptQuery): void {
-    this.repository.remove(query);
+  removePrompt(messageId: string): void {
+    this.repository.remove(messageId);
+  }
+
+  removePrompts(query: PromptQuery): void {
+    this.repository.removeAll(query);
   }
 
   async handleReaction(
@@ -40,11 +44,7 @@ class PromptManager {
     emoji: Emoji,
     userId: string
   ): Promise<void> {
-    const prompt = await this.repository.findOne({
-      type: "reaction",
-      channelId: message.channel.id,
-      messageId: message.id
-    });
+    const prompt = await this.repository.get(message.id);
     if (!prompt) return;
     
     const executor = this.executors.get(prompt.name) as ReactionPromptExecutor;
@@ -54,7 +54,7 @@ class PromptManager {
   }
 
   async handleMessage(client: Client, message: Message): Promise<void> {
-    const prompts = await this.repository.find({
+    const prompts = await this.repository.getAll({
       type: "message",
       channelId: message.channel.id
     });
