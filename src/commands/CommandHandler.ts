@@ -4,10 +4,12 @@ import { Command } from "./Command";
 import { Client } from "../Client";
 
 class CommandManager {
+  client: Client;
   commands: Map<string, Command>
   aliases: Map<string, string>;
 
-  constructor() {
+  constructor(client: Client) {
+    this.client = client;
     this.commands = new Map();
     this.aliases = new Map();
   }
@@ -42,11 +44,12 @@ class CommandManager {
     return null;
   }
 
-  handle(client: Client, message: Message): void {
-    const [ commandName, ...args ] = message.content.split(" ");
+  handle(message: Message): void {
+    const [ commandCall, ...args ] = message.content.split(" ");
+    const cmdName = commandCall.slice(this.client.botOptions.prefix?.length);
   
-    const command = this.getCommand(commandName);
-    if (command) command.execute(client, message, args);
+    const command = this.getCommand(cmdName);
+    if (command) command.execute(this.client, message, args);
   }
 }
 

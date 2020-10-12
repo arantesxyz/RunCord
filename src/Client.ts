@@ -1,13 +1,12 @@
 import { Client as ErisClient, ClientOptions } from "eris";
 
-import { InMemoryPromptRepository } from "./prompts/InMemoryPromptRepository";
 import { CommandManager } from "./commands/CommandHandler";
 import { PromptRepository } from "./prompts/structures";
 import { PromptManager } from "./prompts/PromptManager";
 
 interface RunCordOptions {
   prefix?: string;
-  promptRepository: PromptRepository;
+  promptRepository?: PromptRepository;
 }
 class Client extends ErisClient {
   botOptions: RunCordOptions;
@@ -17,17 +16,15 @@ class Client extends ErisClient {
 
   constructor(
     token: string,
-    botOptions: RunCordOptions = {
-      promptRepository: new InMemoryPromptRepository()
-    },
+    botOptions: RunCordOptions = {},
     clientOptions: ClientOptions = {}
   ) {
     super(token, clientOptions);
 
     this.botOptions = botOptions;
 
-    this.promptManager = new PromptManager(botOptions.promptRepository);
-    this.commandManager = new CommandManager();
+    this.promptManager = new PromptManager(this);
+    this.commandManager = new CommandManager(this);
   }
 }
 

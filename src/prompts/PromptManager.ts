@@ -9,13 +9,18 @@ import {
   ReactionPromptExecutor
 } from "./structures";
 
+import { InMemoryPromptRepository } from "./InMemoryPromptRepository";
+
 class PromptManager {
+  client: Client;
   repository: PromptRepository;
 
   executors = new Map<string, PromptExecutor>();
 
-  constructor(repository: PromptRepository) {
-    this.repository = repository;
+  constructor(client: Client) {
+    this.client = client;
+    this.repository = client.botOptions.promptRepository ||
+      new InMemoryPromptRepository();
   }
 
   addExecutor(executor: PromptExecutor): void {
@@ -39,7 +44,6 @@ class PromptManager {
   }
 
   async handleReaction(
-    client: Client,
     message: Message,
     emoji: Emoji,
     userId: string
@@ -50,10 +54,10 @@ class PromptManager {
     const executor = this.executors.get(prompt.name) as ReactionPromptExecutor;
     if (!executor) return;
 
-    executor.execute(client, prompt, message, emoji, userId);
+    executor.execute(this.client, prompt, message, emoji, userId);
   }
 
-  async handleMessage(client: Client, message: Message): Promise<void> {
+  async handleMessage(message: Message): Promise<void> {
     const prompts = await this.repository.getAll({
       type: "message",
       channelId: message.channel.id
@@ -68,7 +72,7 @@ class PromptManager {
 
       if (!executor) return;
 
-      executor.execute(client, prompt, message);
+      executor.execute(this.client, prompt, message);
     }
   }
 }

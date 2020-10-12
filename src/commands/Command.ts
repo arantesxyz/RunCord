@@ -1,7 +1,7 @@
 import { Message } from "eris";
 
 import { Client } from "../Client";
-import { CommandOptions } from "./structures";
+import { CommandOptions, UnsafeCommandOptions } from "./structures";
 
 class Command {
   name: string;
@@ -10,14 +10,15 @@ class Command {
   parent?: Command;
   subcommands: Map<string, Command>;
 
-  constructor(name: string, options: CommandOptions) {
+  constructor(name: string, options?: UnsafeCommandOptions) {
     this.name = name;
-    this.options = options || {
+    this.options = Object.assign({
       aliases: [],
       description: "No description",
       shortDescription: "No description",
+      requiredArgs: 0,
       usage: ""
-    };
+    }, options);
 
     this.subcommands = new Map(); 
   }
@@ -29,6 +30,7 @@ class Command {
     );
   }
 
+  // TODO: Fix subcommands aliases
   addSubcommand(subcommand: Command): void {
     subcommand.parent = this;
     this.subcommands.set(subcommand.name, subcommand);
@@ -38,13 +40,8 @@ class Command {
     this.subcommands.delete(name);
   }
 
-  // _execute(client: Client, message: Message, args: Array<string>): void {
-  // this.onExecute(client, message, args);
-  // }
-
   execute(client: Client, message: Message, args: Array<string>): void {
     // TODO: Check perms
-
 
     if (args.length < this.options.requiredArgs) {
       const usage =
@@ -60,13 +57,15 @@ class Command {
     }
 
     // Check for subcommand
-    const [ firstArg, ...rest ] = args;
-    const subCommandName = firstArg.toLowerCase();
-
-    const subCommand = this.subcommands.get(subCommandName);
-    if (subCommand) {
-      subCommand.execute(client, message, rest);
-      return;
+    if (args.length) {
+      const [ firstArg, ...rest ] = args;
+      const subCommandName = firstArg.toLowerCase();
+    
+      const subCommand = this.subcommands.get(subCommandName);
+      if (subCommand) {
+        subCommand.execute(client, message, rest);
+        return;
+      }
     }
 
     this.onExecute(client, message, args);

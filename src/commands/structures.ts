@@ -6,4 +6,12 @@ interface CommandOptions {
   usage: string;
 }
 
-export { CommandOptions };
+interface UnsafeCommandOptions {
+  aliases?: Array<string>;
+  description?: string;
+  shortDescription?: string;
+  requiredArgs?: number;
+  usage?: string;
+}
+
+export { CommandOptions, UnsafeCommandOptions };
