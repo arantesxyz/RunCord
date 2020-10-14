@@ -1,4 +1,4 @@
-import { Emoji, Message } from "eris";
+import { Emoji, Message, PossiblyUncachedMessage, TextableChannel } from "eris";
 import { Client } from "../Client";
 
 interface Prompt {
@@ -32,14 +32,18 @@ interface PromptExecutor extends Prompt{
 }
 
 interface MessagePromptExecutor extends PromptExecutor {
-  execute(client: Client, data: PromptData, message: Message): Promise<void>;
+  execute(
+    client: Client,
+    data: PromptData,
+    message: Message<TextableChannel>
+  ): Promise<void>;
 }
 
 interface ReactionPromptExecutor extends PromptExecutor {
   execute(
     client: Client,
     data: PromptData,
-    message: Message,
+    message: PossiblyUncachedMessage,
     emoji: Emoji,
     userId: string
   ): Promise<void>;

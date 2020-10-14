@@ -1,4 +1,4 @@
-import { Emoji, Message } from "eris";
+import { Emoji, Message, PossiblyUncachedMessage, TextableChannel } from "eris";
 import { Client } from "../Client";
 import {
   MessagePromptExecutor,
@@ -44,7 +44,7 @@ class PromptManager {
   }
 
   async handleReaction(
-    message: Message,
+    message: PossiblyUncachedMessage,
     emoji: Emoji,
     userId: string
   ): Promise<void> {
@@ -57,12 +57,12 @@ class PromptManager {
     executor.execute(this.client, prompt, message, emoji, userId);
   }
 
-  async handleMessage(message: Message): Promise<void> {
+  async handleMessage(message: Message<TextableChannel>): Promise<void> {
     const prompts = await this.repository.getAll({
       type: "message",
       channelId: message.channel.id
     });
-
+    
     if (!prompts || !prompts.length) return;
     
     for (const prompt of prompts) {
