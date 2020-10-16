@@ -46,6 +46,8 @@ class CommandManager {
 
   handle(message: Message): void {
     const [ commandCall, ...args ] = message.content.split(" ");
+    if (!commandCall.startsWith(this.client.botOptions.prefix || "")) return;
+
     const cmdName = commandCall.slice(this.client.botOptions.prefix?.length);
   
     const command = this.getCommand(cmdName);
